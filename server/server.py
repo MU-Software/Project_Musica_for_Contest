@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #Copyright 2016 MU Software(@MUsoftware on twitter), All Rights Reserved.
 #Musica Basic Score Server - Main server side module(main)
-import sys; sys.dont_write_bytecode = True
+import sys; sys.dont_write_bytecode = True #PYC 생성을 막기 위함
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import argparse, requests, urlparse, re, db_module, simpletable, json
 DB = db_module.DB_control()
@@ -207,12 +207,11 @@ class MyHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='MU Software MUSICA Score Server')
-	parser.add_argument('ip', type=str, help='IP for Server')
 	parser.add_argument('port', type=int, help='Port for Server')
 	args = parser.parse_args()
 
 	try:
-		print("Run Server on {0}:{1}".format(args.ip, args.port))
+		print("Run Server on {1}".format(args.port))
 		server = HTTPServer(('', args.port), MyHandler)
 		server.serve_forever()
 	except KeyboardInterrupt:
