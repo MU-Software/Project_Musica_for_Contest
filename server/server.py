@@ -54,7 +54,6 @@ HTML_MAIN = """
 	<link rel="icon"
 		type="image/png"
 		href="/static/favicon.png">
-	<meta charset="euc-kr">
 	<title>MUSICA Score Chart</title>
 	<style>
 	body {background-color: lightblue;}
@@ -127,6 +126,40 @@ HTML_404 = """
 	</div>
 
 	<p>Written by MU Software</p>"""
+HTML_LOGIN = """
+	<!doctype html>
+	<meta charset="utf-8">
+	<link rel="icon"
+		type="image/png"
+		href="/static/favicon.png">
+	<style>
+	body {background-color: lightblue;}
+
+	h1 {
+		font-family: verdana;
+		font-size: 50px;
+		color: DarkCyan;
+		text-align: center;
+		vertical-align: middle;
+	}
+	h2 {
+		text-align: center;
+	}
+	</style>
+	<html>
+		<head>
+			<title>로그인</title>
+		</head>
+		<body>
+			<h1>Musica, MIDI based Rhythm Game.</h1>
+			<h2>
+			<form action = "/login" method = "post">
+			<input type = "text" name = "id" value = "" placeholder="유저 ID"> <p>
+			<input type = "password" name = "pwd" value = "" placeholder="비밀번호"> <p>
+			<input type = "submit" value = "로그인">
+			</form></h2>
+		</body>
+	</html>"""
 
 class MyHandler(BaseHTTPRequestHandler):
 	def do_GET(self): #GET & DELETE 처리
@@ -163,6 +196,8 @@ class MyHandler(BaseHTTPRequestHandler):
 		
 		if parsed_path.path in ['/', '/main', '/index']: #GET으로 메인 요청
 			self.wfile.write(HTML_MAIN % (CSS_LANK, 'This is main page', ''))			
+		elif parsed_path.path == '/login': #GET으로 로그인 폼 요청
+			self.wfile.write(HTML_LOGIN)
 		elif parsed_path.path == '/view_score': #GET으로 랭킹 요청
 			if not query_dict or not query_dict.has_key('songID'): #파싱된 쿼리 내용이 없을 때 || 파싱된 쿼리 내용에 songID가 없을 때
 				self.wfile.write(HTML_MAIN % (CSS_LANK, 'Query parsing failed. 쿼리 파싱에 실패하였습니다.', ''))
@@ -176,18 +211,22 @@ class MyHandler(BaseHTTPRequestHandler):
 		parsed_path = urlparse.urlparse(self.path)
 		length = int(self.headers['Content-Length'])
 		data = self.rfile.read(length).decode('utf-8')
-		if parsed_path.path == '/update_score':
-			self.send_response(200)
-			self.send_header("Content-type", "application/octet-stream")
-			self.end_headers()
+		if parsed_path.path == '/update_score': #점수 바꾸기 !!DB 점수가 더 높으면 바꾸지 말게
 			try:
 				update_score_data = json.loads(data)
 			except:
 				return
 			if set(('userID','songID','score')) <= set(update_score_data):
+				self.send_response(200)
+				self.send_header("Content-type", "application/octet-stream")
+				self.end_headers()
 				DB.update_user_score(update_score_data['userID'],
 									 update_score_data['songID'],
 									 update_score_data['score'] )
+			else:
+				self.send_response(404)
+				self.send_header("Content-type", "application/octet-stream")
+				self.end_headers()
 			return
 		elif parsed_path.path == '/view_score_client':
 			self.send_response(200)
@@ -205,7 +244,17 @@ class MyHandler(BaseHTTPRequestHandler):
 					rank_userName.append(tuple((i[0], DB.getUserName(i[0]),i[1])))
 				self.wfile.write(rank_userName)
 			return
-		else:
+		elif parsed_path.path == '/login':
+			self.send_response(200)
+			self.send_header("Content-type", "text/plain")
+			self.end_headers()
+			query_list = filter(None, data.split('&'))
+			query_dict = dict()
+			for i in query_list:
+				if len(filter(None, i.split('='))) > 1:
+					query_dict[i.split('=')[0]] = i.split('=')[1]
+			print query_dict
+		else: #요청이 존재하지 않는 페이지일때-404에러 헤더 전송
 			self.send_response(404)
 			self.send_header("Content-type", "application/octet-stream")
 			self.end_headers()

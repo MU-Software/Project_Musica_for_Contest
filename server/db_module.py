@@ -42,7 +42,7 @@ class DB_control(object):
 			musica_db_file.commit()
 			
 			self.add_user(randomID(), 'MU_Admin', 'yj809042', admin=True) #Create admin account.
-			self.add_song(randomID(), 'Tutorial', randomID()) #Create tutorial(dummy) song
+			self.add_song('Tutorial', 'Tutorial', 'AAAAAAA') #Create tutorial(dummy) song
 			print("DB setuped.")
 		except:
 			print("Error raised while setuping DB")
@@ -106,7 +106,11 @@ class DB_control(object):
 			self.rollback_DB()
 	def update_user_score(self, cardID, songID, score):
 		try:
-			update_score_str = "UPDATE score SET {0} = {1} WHERE USER_ID = '{2}'".format(songID, score, cardID)
+			score_prev = musica_db.execute("SELECT {0} FROM score WHERE USER_ID = ?".format(songID),(cardID,)).fetchall()[0][0]
+			if score > score_prev:
+				update_score_str = "UPDATE score SET {0} = {1} WHERE USER_ID = '{2}'".format(songID, score, cardID)
+			else:
+				return
 			print update_score_str
 			musica_db.execute(update_score_str)
 			musica_db_file.commit()
@@ -125,7 +129,7 @@ class DB_control(object):
 			print("Error raised while adding song. Rolling back DB...")
 			self.rollback_DB()
 	def del_song(self, songID):
-		#Should create new table without selected songID's column and drop the old one.
+		#Create new table without selected songID's column and drop the old one.
 		try:
 			musica_db.execute("DROP TABLE IF EXISTS score_tmp")
 			column_cmd = musica_db.execute("SELECT * FROM score")
