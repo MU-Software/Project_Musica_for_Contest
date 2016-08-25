@@ -172,7 +172,6 @@ class DB_control(object):
 			print("Error raised while closing DB. Critical.")
 			raise
 	
-	
 	def table_json_parser(self, tableName, return_json_str=True):
 		try:
 			table_data_json = {}
@@ -212,6 +211,13 @@ class DB_control(object):
 		except:
 			print("Error raised while exporting table to json")
 			return None
+	def checkUserInfo(self, cardID, password):
+		user_info = musica_db.execute("SELECT * FROM user WHERE CARD_ID = ?",(cardID,)).fetchall()
+		user_password = user_info[0][3]
+		admin_bool = True if user_info[0][4] is 1 else False
+		if password == user_password and not admin_bool:
+			return True
+		return False
 	def getUserName(self, cardID):
 		user_table = self.table_json_parser(tableName='user',return_json_str=False)
 		return user_table[cardID]['NAME'] if user_table.has_key(cardID) else None

@@ -4,6 +4,7 @@
 #Musica Basic Score Server - Main server side module(main)
 import sys; sys.dont_write_bytecode = True #PYC 생성을 막기 위함
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import argparse, urlparse, db_module, simpletable, json
 DB = db_module.DB_control()
 CSS_LANK = """
 	<style>
@@ -210,7 +211,7 @@ class MyHandler(BaseHTTPRequestHandler):
 		parsed_path = urlparse.urlparse(self.path)
 		length = int(self.headers['Content-Length'])
 		data = self.rfile.read(length).decode('utf-8')
-		if parsed_path.path == '/update_score': #점수 바꾸기 !!DB 점수가 더 높으면 바꾸지 말게
+		if parsed_path.path == '/update_score': #점수 바꾸기
 			try:
 				update_score_data = json.loads(data)
 			except:
