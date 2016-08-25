@@ -4,7 +4,6 @@
 #Musica Basic Score Server - Main server side module(main)
 import sys; sys.dont_write_bytecode = True #PYC 생성을 막기 위함
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import argparse, requests, urlparse, re, db_module, simpletable, json
 DB = db_module.DB_control()
 CSS_LANK = """
 	<style>
