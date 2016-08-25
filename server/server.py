@@ -178,12 +178,37 @@ class MyHandler(BaseHTTPRequestHandler):
 		data = self.rfile.read(length).decode('utf-8')
 		if parsed_path.path == '/update_score':
 			self.send_response(200)
-			update_score_data = json.loads(data)
-			DB.update_user_score(update_score_data['userID'],
-								 update_score_data['songID'],
-								 update_score_data['score'] )
+			self.send_header("Content-type", "application/octet-stream")
+			self.end_headers()
+			try:
+				update_score_data = json.loads(data)
+			except:
+				return
+			if set(('userID','songID','score')) <= set(update_score_data):
+				DB.update_user_score(update_score_data['userID'],
+									 update_score_data['songID'],
+									 update_score_data['score'] )
+			return
+		elif parsed_path.path == '/view_score_client':
+			self.send_response(200)
+			self.send_header("Content-type", "text/plain")
+			self.end_headers()
+			try:
+				requested_data = json.loads(data)
+			except:
+				return
+			if requested_data.has_key('songID') and DB.topRank(requested_data['songID']):
+				#튜플 두번째에 userName 추가
+				rank = DB.topRank(requested_data['songID'])
+				rank_userName = []
+				for i in rank:
+					rank_userName.append(tuple((i[0], DB.getUserName(i[0]),i[1])))
+				self.wfile.write(rank_userName)
+			return
 		else:
 			self.send_response(404)
+			self.send_header("Content-type", "application/octet-stream")
+			self.end_headers()
 	
 	do_PUT = do_POST    #PUT을 POST로 처리하도록
 	do_DELETE = do_GET #DELETE를 GET으로 처리하도록
@@ -211,7 +236,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	try:
-		print("Run Server on {1}".format(args.port))
+		print("Run Server on {0}".format(args.port))
 		server = HTTPServer(('', args.port), MyHandler)
 		server.serve_forever()
 	except KeyboardInterrupt:
