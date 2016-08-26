@@ -4,10 +4,38 @@
 #Musica Basic Score Server - Main server side module(main)
 import sys; sys.dont_write_bytecode = True #PYC 생성을 막기 위함
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import Cookie
 import argparse, urlparse, db_module, simpletable, json
 DB = db_module.DB_control()
-CSS_LANK = """
+HTML_MAIN = """
+	<!doctype html>
+	<meta charset="utf-8">
+	<link rel="icon"
+		type="image/png"
+		href="/static/favicon.png">
+	<title>MUSICA Score Chart</title>
 	<style>
+	body {background-color: lightblue;}
+
+	h1 {
+		font-family: verdana;
+		font-size: 50px;
+		color: DarkCyan;
+		text-align: center;
+		vertical-align: middle;
+	}
+	div {
+		color: DarkCyan ;
+		font-family: verdana;
+		font-size: 25px;
+		text-align: center;
+	}
+	p {
+		color: DarkCyan ;
+		font-family: verdana;
+		font-size: 15px;
+		text-align: center;
+	}
 	table.mytable {
 		font-family: times;
 		font-size:12px;
@@ -16,7 +44,7 @@ CSS_LANK = """
 		border-color: #0081a7;
 		border-collapse: collapse;
 		background-color: #ffffff;
-		width=100%;
+		width=100%%;
 		min-width:400px;
 		max-width:550px;
 		text-align: center;
@@ -47,38 +75,7 @@ CSS_LANK = """
 		display:inline;
 		font-weight: bold;
 	}
-	</style>"""
-HTML_MAIN = """
-	<!doctype html>
-	<meta charset="utf-8">
-	<link rel="icon"
-		type="image/png"
-		href="/static/favicon.png">
-	<title>MUSICA Score Chart</title>
-	<style>
-	body {background-color: lightblue;}
-
-	h1 {
-		font-family: verdana;
-		font-size: 50px;
-		color: DarkCyan;
-		text-align: center;
-		vertical-align: middle;
-	}
-	div {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 25px;
-		text-align: center;
-	}
-	p {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 15px;
-		text-align: center;
-	}
 	</style>
-	%s
 	<h1>Musica, MIDI based Rhythm Game.</h1>
 	<div>%s</div>
 	%s
@@ -126,44 +123,17 @@ HTML_404 = """
 	</div>
 
 	<p>Written by MU Software</p>"""
-HTML_LOGIN = """
-	<!doctype html>
-	<meta charset="utf-8">
-	<link rel="icon"
-		type="image/png"
-		href="/static/favicon.png">
-	<style>
-	body {background-color: lightblue;}
-
-	h1 {
-		font-family: verdana;
-		font-size: 50px;
-		color: DarkCyan;
-		text-align: center;
-		vertical-align: middle;
-	}
-	h2 {
-		text-align: center;
-	}
-	</style>
-	<html>
-		<head>
-			<title>로그인</title>
-		</head>
-		<body>
-			<h1>Musica, MIDI based Rhythm Game.</h1>
-			<h2>
-			<form action = "/login" method = "post">
-			<input type = "text" name = "id" value = "" placeholder="유저 ID"> <p>
-			<input type = "password" name = "pwd" value = "" placeholder="비밀번호"> <p>
-			<input type = "submit" value = "로그인">
-			</form></h2>
-		</body>
-	</html>"""
+HTML_ALERT = """
+	<!DOCTYPE html>
+	<script type="text/javascript">
+	alert("%s");
+	history.go(-1);
+	</script>"""
 
 class MyHandler(BaseHTTPRequestHandler):
 	def do_GET(self): #GET & DELETE 처리
 		parsed_path = urlparse.urlparse(self.path)
+
 		if self.path == '/favicon.ico':#잘못된 파비콘 처리용
 			self.path = '/static/favicon.png'
 		if self.path.endswith(".png"): #PNG 이미지 처리용
@@ -186,31 +156,33 @@ class MyHandler(BaseHTTPRequestHandler):
 		self.send_response(200)
 		self.send_header("Content-type", "text/html")
 		self.end_headers()
-		
+
 		#Query 파싱
 		query_list = filter(None, parsed_path.query.split('&'))
 		query_dict = dict()
 		for i in query_list:
 			if len(filter(None, i.split('='))) > 1:
 				query_dict[i.split('=')[0]] = i.split('=')[1]
-		
+
 		if parsed_path.path in ['/', '/main', '/index']: #GET으로 메인 요청
-			self.wfile.write(HTML_MAIN % (CSS_LANK, 'This is main page', ''))			
-		elif parsed_path.path == '/login': #GET으로 로그인 폼 요청
-			self.wfile.write(HTML_LOGIN)
+			self.wfile.write(HTML_MAIN % ('This is main page', ''))
+
 		elif parsed_path.path == '/view_score': #GET으로 랭킹 요청
 			if not query_dict or not query_dict.has_key('songID'): #파싱된 쿼리 내용이 없을 때 || 파싱된 쿼리 내용에 songID가 없을 때
-				self.wfile.write(HTML_MAIN % (CSS_LANK, 'Query parsing failed. 쿼리 파싱에 실패하였습니다.', ''))
+				self.wfile.write(HTML_MAIN % ('Query parsing failed. 쿼리 파싱에 실패하였습니다.', ''))
 			else:
 				userID = None if not query_dict.has_key('userID') else query_dict['userID']
-				self.wfile.write(HTML_MAIN % (CSS_LANK, 'Score Rank - {0}'.format(DB.getSongName(query_dict['songID'])),
+				self.wfile.write(HTML_MAIN % ('Score Rank - {0}'.format(DB.getSongName(query_dict['songID'])),
 								 self.htmlRankWriter(query_dict['songID'], userID)))
+
 		else: #요청이 존재하지 않는 페이지일때-404에러 페이지 표시
 			self.wfile.write(HTML_404)
+
 	def do_POST(self): #POST & PUT 처리
 		parsed_path = urlparse.urlparse(self.path)
 		length = int(self.headers['Content-Length'])
 		data = self.rfile.read(length).decode('utf-8')
+
 		if parsed_path.path == '/update_score': #점수 바꾸기
 			try:
 				update_score_data = json.loads(data)
@@ -218,17 +190,16 @@ class MyHandler(BaseHTTPRequestHandler):
 				return
 			if set(('userID','songID','score')) <= set(update_score_data):
 				self.send_response(200)
-				self.send_header("Content-type", "application/octet-stream")
 				self.end_headers()
 				DB.update_user_score(update_score_data['userID'],
 									 update_score_data['songID'],
 									 update_score_data['score'] )
 			else:
 				self.send_response(404)
-				self.send_header("Content-type", "application/octet-stream")
 				self.end_headers()
 			return
-		elif parsed_path.path == '/view_score_client':
+
+		elif parsed_path.path == '/view_score_client': #랭크를 게임 클라이언트에서 받기 쉽게 주기
 			self.send_response(200)
 			self.send_header("Content-type", "text/plain")
 			self.end_headers()
@@ -244,21 +215,78 @@ class MyHandler(BaseHTTPRequestHandler):
 					rank_userName.append(tuple((i[0], DB.getUserName(i[0]),i[1])))
 				self.wfile.write(rank_userName)
 			return
-		elif parsed_path.path == '/login':
-			self.send_response(200)
-			self.send_header("Content-type", "text/plain")
-			self.end_headers()
-			query_list = filter(None, data.split('&'))
-			query_dict = dict()
-			for i in query_list:
-				if len(filter(None, i.split('='))) > 1:
-					query_dict[i.split('=')[0]] = i.split('=')[1]
-			print query_dict
+
+		elif parsed_path.path == '/add_user': #유저 생성
+			try:
+				user_data = json.loads(data)
+			except:
+				return
+			if set(('userID','name','password')) <= set(user_data):
+				self.send_response(200)
+				self.end_headers()
+				DB.add_user(user_data['userID'],
+							user_data['name'],
+							user_data['password'] )
+			else:
+				self.send_response(404)
+				self.end_headers()
+			return
+
+		elif parsed_path.path == '/del_user': #유저 삭제
+			try:
+				user_data = json.loads(data)
+			except:
+				return
+			if set(('userID', 'password')) <= set(user_data):
+				self.send_response(200)
+				self.end_headers()
+				if DB.checkUserInfo(user_data['userID'], user_data['password']):
+					DB.del_user(user_data['userID'], user_data['password'] )
+				else:
+					self.wfile.write(HTML_ALERT % 'Incorrect User Info, Deleting account Failed!')
+			else:
+				self.send_response(404)
+				self.end_headers()
+			return
+
+		elif parsed_path.path == '/update_user_name': #유저 이름 변경
+			try:
+				user_data = json.loads(data)
+			except:
+				return
+			if set(('userID', 'password', 'new_name')) <= set(user_data):
+				self.send_response(200)
+				self.end_headers()
+				if DB.checkUserInfo(user_data['userID'], user_data['password']):
+					DB.update_user_name(user_data['userID'], user_data['new_name'], user_data['password'] )
+				else:
+					self.wfile.write(HTML_ALERT % 'Incorrect User Info, Name changing Failed!')
+			else:
+				self.send_response(404)
+				self.end_headers()
+			return
+
+		elif parsed_path.path == '/update_user_password': #비밀번호 변경
+			try:
+				user_data = json.loads(data)
+			except:
+				return
+			if set(('userID', 'prev_password', 'new_password')) <= set(user_data):
+				self.send_response(200)
+				self.end_headers()
+				if DB.checkUserInfo(user_data['userID'], user_data['prev_password']):
+					DB.update_user_password(user_data['userID'], user_data['prev_password'], user_data['new_password'] )
+				else:
+					self.wfile.write(HTML_ALERT % 'Incorrect User Info, Password changing Failed!')
+			else:
+				self.send_response(404)
+				self.end_headers()
+			return
+
 		else: #요청이 존재하지 않는 페이지일때-404에러 헤더 전송
 			self.send_response(404)
-			self.send_header("Content-type", "application/octet-stream")
 			self.end_headers()
-	
+
 	do_PUT = do_POST    #PUT을 POST로 처리하도록
 	do_DELETE = do_GET #DELETE를 GET으로 처리하도록
 

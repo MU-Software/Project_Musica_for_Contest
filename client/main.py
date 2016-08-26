@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #Copyright 2016 MU Software(@MUsoftware on twitter), All Rights Reserved.
 import sys; sys.dont_write_bytecode = True
-import random, string, json, zipfile, threading, time, midi
+import random, string, json, zipfile, argparse, time, midi
 from panda3d.core import *
 reload (sys)
 loadPrcFile("config.prc")
