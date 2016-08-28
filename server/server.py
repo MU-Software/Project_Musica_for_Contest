@@ -7,122 +7,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import Cookie
 import argparse, urlparse, db_module, simpletable, json
 DB = db_module.DB_control()
-HTML_MAIN = """
-	<!doctype html>
-	<meta charset="utf-8">
-	<link rel="icon"
-		type="image/png"
-		href="/static/favicon.png">
-	<title>MUSICA Score Chart</title>
-	<style>
-	body {background-color: lightblue;}
-
-	h1 {
-		font-family: verdana;
-		font-size: 50px;
-		color: DarkCyan;
-		text-align: center;
-		vertical-align: middle;
-	}
-	div {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 25px;
-		text-align: center;
-	}
-	p {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 15px;
-		text-align: center;
-	}
-	table.mytable {
-		font-family: times;
-		font-size:12px;
-		color:#000000;
-		border-width: 1px;
-		border-color: #0081a7;
-		border-collapse: collapse;
-		background-color: #ffffff;
-		width=100%%;
-		min-width:400px;
-		max-width:550px;
-		text-align: center;
-		margin: auto;
-		margin-top: 10px;
-		table-layout:fixed;
-	}
-	table.mytable th {
-		border-width: 1px;
-		padding: 8px;
-		border-style: solid;
-		border-color: #0081a7;
-		background-color: #add8fe;
-		color:#000000;
-	}
-	table.mytable td {
-		border-width: 1px;
-		padding: 8px;
-		border-style: solid;
-		border-color: #0081a7;
-	}
-	#code {
-		display:inline;
-		font-family: courier;
-		color: #3d9400;
-	}
-	#string {
-		display:inline;
-		font-weight: bold;
-	}
-	</style>
-	<h1>Musica, MIDI based Rhythm Game.</h1>
-	<div>%s</div>
-	%s
-
-	<p>Written by MU Software</p> """
-HTML_404 = """
-	<!doctype html>
-	<meta charset="utf-8">
-	<link rel="icon"
-		type="image/png"
-		href="/static/favicon.png">
-	<title>404 Page Not Found</title>
-	<style>
-	body {
-		background-color: lightblue;
-	}
-
-	h1 {
-		margin-top: 300px;
-		font-family: verdana;
-		font-size: 50px;
-		color: DarkCyan;
-		text-align: center;
-		vertical-align: middle;
-	}
-	div {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 25px;
-		text-align: center;
-	}
-	p {
-		color: DarkCyan ;
-		font-family: verdana;
-		font-size: 15px;
-		text-align: center;
-	}
-	</style>
-	<div style="display:inline-block;vertical-align:top;">
-		<img src="/static/404_820x820.png">
-	</div>
-	<div style="display:inline-block;">
-		<h1>Umm...Page doesn't exist.</h1>
-		<div>Maybe you mis-spelled URL.  <a href="/">Go to Main</a></div>
-	</div>
-
-	<p>Written by MU Software</p>"""
+HTML_BASE = open('static/base.html')
+HTML_404 = open('static/404.html')
 HTML_ALERT = """
 	<!DOCTYPE html>
 	<script type="text/javascript">
@@ -165,18 +51,18 @@ class MyHandler(BaseHTTPRequestHandler):
 				query_dict[i.split('=')[0]] = i.split('=')[1]
 
 		if parsed_path.path in ['/', '/main', '/index']: #GET으로 메인 요청
-			self.wfile.write(HTML_MAIN % ('This is main page', ''))
+			self.wfile.write(str(HTML_BASE.read()) % ('This is main page', ''))
 
 		elif parsed_path.path == '/view_score': #GET으로 랭킹 요청
 			if not query_dict or not query_dict.has_key('songID'): #파싱된 쿼리 내용이 없을 때 || 파싱된 쿼리 내용에 songID가 없을 때
-				self.wfile.write(HTML_MAIN % ('Query parsing failed. 쿼리 파싱에 실패하였습니다.', ''))
+				self.wfile.write(str(HTML_BASE.read()) % ('Query parsing failed. 쿼리 파싱에 실패하였습니다.', ''))
 			else:
 				userID = None if not query_dict.has_key('userID') else query_dict['userID']
-				self.wfile.write(HTML_MAIN % ('Score Rank - {0}'.format(DB.getSongName(query_dict['songID'])),
+				self.wfile.write(str(HTML_BASE.read()) % ('Score Rank - {0}'.format(DB.getSongName(query_dict['songID'])),
 								 self.htmlRankWriter(query_dict['songID'], userID)))
 
 		else: #요청이 존재하지 않는 페이지일때-404에러 페이지 표시
-			self.wfile.write(HTML_404)
+			self.wfile.write(HTML_404.read())
 
 	def do_POST(self): #POST & PUT 처리
 		parsed_path = urlparse.urlparse(self.path)
@@ -297,7 +183,7 @@ class MyHandler(BaseHTTPRequestHandler):
 			for i in rank:
 				rank_userName.append(tuple((DB.getUserName(i[0]),i[1])))
 			rank_html_table = simpletable.SimpleTable(rows       = rank_userName,
-													  header_row = ['유저 ID','점수'],
+													  header_row = ['유저','점수'],
 													  css_class  = 'mytable')
 			if user: #유저가 랭크 안에 있는지 검사
 				if [i for i in rank if i[0] == user]:
@@ -306,6 +192,9 @@ class MyHandler(BaseHTTPRequestHandler):
 		else:
 			rank_html_table = '<div>Failed to get score rank list. 랭크 목록을 가져오지 못했습니다.</div>'
 		return rank_html_table
+
+def dev_restart():
+	pass
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='MU Software MUSICA Score Server')

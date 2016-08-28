@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<title>MUSICA Score Chart</title>
+<style>
+	body {background-color: lightblue;}
+
+	h1 {
+		font-family: verdana;
+		font-size: 50px;
+		color: DarkCyan;
+		text-align: center;
+		vertical-align: middle;
+	}
+	div {
+		color: DarkCyan ;
+		font-family: verdana;
+		font-size: 25px;
+		text-align: center;
+	}
+	p {
+		color: DarkCyan ;
+		font-family: verdana;
+		font-size: 15px;
+		text-align: center;
+	}
+	table.mytable {
+		font-family: times;
+		font-size:12px;
+		color:#000000;
+		border-width: 1px;
+		border-color: #0081a7;
+		border-collapse: collapse;
+		background-color: #ffffff;
+		width=100%%;
+		min-width:400px;
+		max-width:550px;
+		text-align: center;
+		margin: auto;
+		margin-top: 10px;
+		table-layout:fixed;
+	}
+	table.mytable th {
+		border-width: 1px;
+		padding: 8px;
+		border-style: solid;
+		border-color: #0081a7;
+		background-color: #add8fe;
+		color:#000000;
+	}
+	table.mytable td {
+		border-width: 1px;
+		padding: 8px;
+		border-style: solid;
+		border-color: #0081a7;
+	}
+	#code {
+		display:inline;
+		font-family: courier;
+		color: #3d9400;
+	}
+	#string {
+		display:inline;
+		font-weight: bold;
+}
+</style>
+<h1>Musica, MIDI based Rhythm Game.</h1>
+<div>%s</div>
+%s
+
+<p>Written by MU Software</p>
