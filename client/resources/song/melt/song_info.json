@@ -1,0 +1,19 @@
+{
+	"ID": "",
+	"song": {
+		"path": ""
+	},
+	"tunnel": {
+		"model": {
+			"path":"",
+			"length":50
+		},
+		"speed":1,
+		"quantity":8
+	}, 
+	"pattern": {
+		"hard":"",
+		"normal":"",
+		"easy":""
+	}
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #Copyright 2016 MU Software(@MUsoftware on twitter), All Rights Reserved.
-#Musica Basic Score Server - Main server side module(main)
+#Musica Score Server - Main server side module(main)
 import sys; sys.dont_write_bytecode = True #PYC 생성을 막기 위함
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import Cookie

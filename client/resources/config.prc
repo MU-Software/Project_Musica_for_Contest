@@ -26,5 +26,5 @@ show-buffers 0
 # 61440 34560
 # 122880 69120
 win-size 1600 900
-window-title MUSICA
+window-title 동방
 win-fixed-size 0
