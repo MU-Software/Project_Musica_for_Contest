@@ -1,0 +1,93 @@
+<CoordinateSystem> { Z-up } 
+<Material> 매트리얼 {
+  <Scalar> diffr { 0.640000 }
+  <Scalar> diffg { 0.640000 }
+  <Scalar> diffb { 0.640000 }
+  <Scalar> specr { 0.500000 }
+  <Scalar> specg { 0.500000 }
+  <Scalar> specb { 0.500000 }
+  <Scalar> shininess { 12.5 }
+  <Scalar> ambr { 1.000000 }
+  <Scalar> ambg { 1.000000 }
+  <Scalar> ambb { 1.000000 }
+  <Scalar> emitr { 0.000000 }
+  <Scalar> emitg { 0.000000 }
+  <Scalar> emitb { 0.000000 }
+}
+
+<Texture> "Texture_1" {
+  "./tex/grid_white_blur_2048.png"
+  <Scalar> format { rgba }
+  <Scalar> envtype { MODULATE }
+  <Scalar> minfilter { LINEAR_MIPMAP_LINEAR }
+  <Scalar> magfilter { LINEAR_MIPMAP_LINEAR }
+  <Scalar> wrap { REPEAT }
+}
+
+  <Group> Tunnel_Thanks_for_playing {
+    <Transform> {
+      <Matrix4> {
+        50.0 0.0 0.0 0.0 
+        0.0 50.0 0.0 0.0 
+        0.0 0.0 50.0 0.0 
+        0.0 0.0 0.0 1.0 
+      }
+    }
+    
+    <VertexPool> Tunnel_Thanks_for_playing {
+    
+      <Vertex> 0 {-50.000000 -50.000000 -100.000000
+        <UV>  {
+          0.000141 0.000141 
+        }
+      }
+      <Vertex> 1 {-50.000000 50.000000 -100.000000
+        <UV>  {
+          0.499859 0.000141 
+        }
+      }
+      <Vertex> 2 {-50.000000 50.000000 100.000000
+        <UV>  {
+          0.499859 0.999576 
+        }
+      }
+      <Vertex> 3 {-50.000000 -50.000000 100.000000
+        <UV>  {
+          0.000141 0.999576 
+        }
+      }
+      <Vertex> 4 {50.000000 50.000000 -100.000000
+        <UV>  {
+          0.500141 0.000141 
+        }
+      }
+      <Vertex> 5 {50.000000 -50.000000 -100.000000
+        <UV>  {
+          0.999859 0.000141 
+        }
+      }
+      <Vertex> 6 {50.000000 -50.000000 100.000000
+        <UV>  {
+          0.999859 0.999576 
+        }
+      }
+      <Vertex> 7 {50.000000 50.000000 100.000000
+        <UV>  {
+          0.500141 0.999576 
+        }
+      }}
+    
+    
+    <Polygon> {
+      <MRef> { 매트리얼 }
+	  <TRef> { Texture_1 }
+      <Normal> {1.000000 0.000000 0.000000}
+      <VertexRef> { 0 1 2 3 <Ref> { Tunnel_Thanks_for_playing }} 
+    }
+    <Polygon> {
+      <MRef> { 매트리얼 }
+	  <TRef> { Texture_1 }
+      <Normal> {-1.000000 0.000000 0.000000}
+      <VertexRef> { 4 5 6 7 <Ref> { Tunnel_Thanks_for_playing }} 
+    }
+  }

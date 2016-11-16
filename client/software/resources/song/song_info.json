@@ -1,0 +1,127 @@
+{
+	"_comment" : [
+		"각 노래 tunnel의 값들은 default로 할 시 기본 값 사용[기본 모델, 속도=1, 길이=50, 모델 갯수=8개]"
+	],
+	"id_list" : {
+		"MUSICA_0001" : ["Meteor", ["4key_short"]],
+		"MUSICA_0002" : ["CanCan", ["4key_short"]],
+		"MUSICA_0003" : ["NO DATA",  []],
+		"MUSICA_0004" : ["NO DATA",  []],
+		"MUSICA_0005" : ["NO DATA",  []],
+		"MUSICA_0006" : ["NO DATA",  []]
+	},
+	"MUSICA_0001"  : {
+		"song_info"  : {
+			"title"  : "Meteor",
+			"artist" : "John",
+			"album"  : "メテオ"
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 70000,
+			"B" : 50000,
+			"C" : 30000,
+			"D" : 10000
+		}
+	},
+	"MUSICA_0002"  : {
+		"song_info"  : {
+			"title"  : "CanCan",
+			"artist" : "",
+			"album"  : ""
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 60000,
+			"B" : 40000,
+			"C" : 20000,
+			"D" :  5000
+		}
+	},
+	"MUSICA_0003"  : {
+		"song_info"  : {
+			"title"  : "DUMMY",
+			"artist" : "",
+			"album"  : ""
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 200000,
+			"B" : 150000,
+			"C" : 100000,
+			"D" :  50000
+		}
+	},
+	"MUSICA_0004"  : {
+		"song_info"  : {
+			"title"  : "DUMMY",
+			"artist" : "",
+			"album"  : ""
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 200000,
+			"B" : 150000,
+			"C" : 100000,
+			"D" :  50000
+		}
+	},
+	"MUSICA_0005"  : {
+		"song_info"  : {
+			"title"  : "DUMMY",
+			"artist" : "",
+			"album"  : ""
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 200000,
+			"B" : 150000,
+			"C" : 100000,
+			"D" :  50000
+		}
+	},
+	"MUSICA_0006"  : {
+		"song_info"  : {
+			"title"  : "DUMMY",
+			"artist" : "",
+			"album"  : ""
+		},
+		"tunnel" : {
+			"path" : "tunnel_default",
+			"speed" : 1,
+			"length" : 50,
+			"quantity" : 8		
+		},
+		"score_deadline" : {
+			"A" : 200000,
+			"B" : 150000,
+			"C" : 100000,
+			"D" :  50000
+		}
+	}
+}
